@@ -1,0 +1,2106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>⚔️ EGGSCALIBER — Royal Egg Arena (Hardcore Challenges)</title>
+  <style>
+    :root {
+      --bg-dark: #0e0a14;
+      --bg-panel: #181224;
+      --bg-card: #221a33;
+      --gold: #f5b942;
+      --diamond: #00bcd4;
+      --border-subtle: #35294d;
+      --text-main: #f4f0ff;
+      --text-muted: #a69bc2;
+      --common: #9e9e9e;
+      --uncommon: #4caf50;
+      --rare: #29b6f6;
+      --epic: #ab47bc;
+      --legendary: #ff9800;
+      --mythic: #ff1744;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Segoe UI', system-ui, -apple-system, Roboto, sans-serif;
+      user-select: none;
+    }
+
+    body {
+      background: radial-gradient(circle at top, #1f1633 0%, #09060e 100%);
+      color: var(--text-main);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 14px;
+    }
+
+    /* Top Navigation & Stats */
+    .top-bar {
+      width: 100%;
+      max-width: 1060px;
+      background: linear-gradient(180deg, #251c38 0%, #171124 100%);
+      border: 2px solid var(--gold);
+      border-radius: 18px;
+      padding: 12px 22px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 14px;
+      box-shadow: 0 8px 28px rgba(0, 0, 0, 0.65), 0 0 15px rgba(245, 185, 66, 0.15);
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .game-title {
+      font-size: 26px;
+      font-weight: 900;
+      background: linear-gradient(90deg, #ffe082, #f5b942, #ff8f00);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      letter-spacing: 1px;
+      text-shadow: 0 2px 10px rgba(245, 185, 66, 0.25);
+      cursor: pointer;
+    }
+
+    .resources {
+      display: flex;
+      gap: 8px;
+      font-weight: 800;
+      font-size: 13px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    .res-pill {
+      background: #0f0b17;
+      padding: 7px 12px;
+      border-radius: 12px;
+      border: 1px solid var(--border-subtle);
+      box-shadow: inset 0 2px 6px rgba(0,0,0,0.5);
+    }
+
+    .res-diamond {
+      color: #80deea;
+    }
+
+    .reset-save-btn {
+      background: rgba(211, 47, 47, 0.2);
+      color: #ff8a80;
+      border: 1px solid #d32f2f;
+      padding: 7px 12px;
+      border-radius: 10px;
+      font-size: 12px;
+      font-weight: 800;
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+
+    .reset-save-btn:hover {
+      background: #d32f2f;
+      color: white;
+    }
+
+    /* Screens */
+    .screen {
+      width: 100%;
+      max-width: 1060px;
+      display: none;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .screen.active {
+      display: flex;
+    }
+
+    /* Home Screen Styles */
+    .home-container {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 16px;
+      max-width: 650px;
+      margin: 0 auto;
+      width: 100%;
+    }
+
+    .menu-btn {
+      width: 100%;
+      background: linear-gradient(135deg, #2a2042 0%, #1b142b 100%);
+      border: 2px solid var(--gold);
+      color: var(--text-main);
+      padding: 16px;
+      border-radius: 18px;
+      font-size: 16px;
+      font-weight: 900;
+      cursor: pointer;
+      box-shadow: 0 6px 18px rgba(0,0,0,0.4);
+      transition: transform 0.15s ease, border-color 0.15s ease;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 10px;
+    }
+
+    .menu-btn:hover {
+      transform: translateY(-3px);
+      border-color: #ffe082;
+    }
+
+    .menu-btn.primary {
+      background: linear-gradient(135deg, #f5b942, #ff8f00);
+      color: #140c02;
+      border: none;
+      box-shadow: 0 8px 25px rgba(245, 185, 66, 0.4);
+    }
+
+    .panel-box {
+      background: var(--bg-panel);
+      border-radius: 20px;
+      padding: 18px;
+      border: 2px solid var(--border-subtle);
+      box-shadow: 0 10px 28px rgba(0,0,0,0.5);
+    }
+
+    .panel-box h2 {
+      font-size: 18px;
+      margin-bottom: 12px;
+      color: var(--gold);
+      border-bottom: 1px solid var(--border-subtle);
+      padding-bottom: 8px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    /* Quests & Achievements List */
+    .quest-item {
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: 12px;
+      padding: 10px 14px;
+      margin-bottom: 8px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 13px;
+    }
+
+    .claim-btn {
+      background: linear-gradient(135deg, #00bcd4, #00838f);
+      color: white;
+      border: none;
+      padding: 6px 12px;
+      border-radius: 8px;
+      font-weight: 800;
+      font-size: 11px;
+      cursor: pointer;
+    }
+
+    .claim-btn:disabled {
+      background: #2a2042;
+      color: #7c7294;
+      cursor: not-allowed;
+    }
+
+    /* Difficulty Select Screen */
+    .difficulty-card {
+      background: var(--bg-card);
+      border: 2px solid var(--border-subtle);
+      border-radius: 16px;
+      padding: 16px;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .difficulty-card:hover {
+      border-color: var(--gold);
+      transform: translateY(-4px);
+    }
+
+    .difficulty-card.disabled {
+      opacity: 0.4;
+      pointer-events: none;
+      filter: grayscale(0.8);
+    }
+
+    /* Tutorial Banner */
+    .tutorial-banner {
+      background: linear-gradient(135deg, #0d3b66 0%, #1d3557 100%);
+      border: 2px solid #4cc9f0;
+      border-radius: 14px;
+      padding: 12px 18px;
+      color: #e0fbfc;
+      font-size: 14px;
+      font-weight: 700;
+      display: none;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      box-shadow: 0 4px 18px rgba(76, 201, 240, 0.25);
+    }
+
+    .tutorial-banner.active {
+      display: flex;
+    }
+
+    /* Battle Arena */
+    .battle-arena {
+      background: linear-gradient(180deg, #1b1429 0%, #130e1d 100%);
+      border-radius: 22px;
+      padding: 18px;
+      border: 2px solid var(--border-subtle);
+      box-shadow: 0 12px 35px rgba(0, 0, 0, 0.6);
+    }
+
+    .arena-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 14px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid var(--border-subtle);
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .turn-info {
+      font-weight: 700;
+      font-size: 15px;
+      color: #e0d7ff;
+    }
+
+    .plays-badge {
+      background: linear-gradient(135deg, #2e7d32, #1b5e20);
+      color: #e8f5e9;
+      padding: 6px 16px;
+      border-radius: 14px;
+      font-weight: 900;
+      font-size: 14px;
+      border: 1px solid #66bb6a;
+      box-shadow: 0 0 12px rgba(76, 175, 80, 0.35);
+    }
+
+    .lanes-container {
+      display: flex;
+      flex-direction: column;
+      gap: 9px;
+    }
+
+    .lane-row {
+      display: grid;
+      grid-template-columns: 1fr 76px 1fr;
+      align-items: center;
+      background: rgba(12, 9, 20, 0.65);
+      border-radius: 14px;
+      padding: 7px 12px;
+      border: 1px solid #29203d;
+    }
+
+    .lane-vs {
+      text-align: center;
+      font-weight: 900;
+      color: var(--text-muted);
+      font-size: 12px;
+      letter-spacing: 0.5px;
+    }
+
+    .egg-slot {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: var(--bg-card);
+      border: 2px solid var(--border-subtle);
+      border-radius: 12px;
+      padding: 8px 14px;
+      min-height: 60px;
+      transition: transform 0.12s ease, border-color 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
+    }
+
+    .egg-slot.player-egg.targetable {
+      border-color: #66bb6a;
+      box-shadow: 0 0 14px rgba(102, 187, 106, 0.45);
+      cursor: pointer;
+      background: #1c2e24;
+    }
+
+    .egg-slot.player-egg.targetable:hover {
+      transform: scale(1.02);
+      background: #253d30;
+    }
+
+    .egg-slot.enemy-targeted {
+      border-color: #ff5252 !important;
+      background: #3b1820 !important;
+      box-shadow: 0 0 16px rgba(255, 82, 82, 0.6);
+      transform: scale(1.02);
+    }
+
+    .egg-slot.dead {
+      opacity: 0.35;
+      filter: grayscale(0.8);
+    }
+
+    .egg-left {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .egg-icon {
+      font-size: 30px;
+      filter: drop-shadow(0 2px 4px rgba(0,0,0,0.6));
+    }
+
+    .egg-name {
+      font-weight: 800;
+      font-size: 14px;
+    }
+
+    .egg-power {
+      font-size: 11px;
+      color: var(--text-muted);
+    }
+
+    .egg-stats {
+      text-align: right;
+      font-weight: 800;
+      font-size: 13px;
+    }
+
+    .hp-bar {
+      color: #ff8a80;
+    }
+
+    .shield-bar {
+      color: #82b1ff;
+      font-size: 12px;
+    }
+
+    /* Battle Log */
+    .battle-log {
+      background: #120d1c;
+      border: 1px solid var(--gold);
+      border-radius: 12px;
+      padding: 10px 16px;
+      font-size: 14px;
+      font-weight: 600;
+      color: #ffe082;
+      min-height: 40px;
+      text-align: center;
+      box-shadow: 0 4px 14px rgba(0,0,0,0.4);
+    }
+
+    /* Hand Area */
+    .hand-area {
+      background: linear-gradient(180deg, #1b1429 0%, #110c1a 100%);
+      border: 2px solid var(--border-subtle);
+      border-radius: 20px;
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .hand-prompt {
+      font-size: 13px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: var(--text-muted);
+    }
+
+    .cards-row {
+      display: flex;
+      gap: 16px;
+      justify-content: center;
+      flex-wrap: wrap;
+      width: 100%;
+    }
+
+    .card {
+      width: 220px;
+      background: linear-gradient(145deg, #281f3d, #1a1329);
+      color: var(--text-main);
+      border: 2px solid var(--border-subtle);
+      border-radius: 16px;
+      padding: 14px;
+      cursor: pointer;
+      transition: transform 0.15s cubic-bezier(0.2, 0.8, 0.2, 1), border-color 0.15s ease, box-shadow 0.15s ease;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      min-height: 155px;
+      box-shadow: 0 6px 18px rgba(0,0,0,0.45);
+    }
+
+    .card:hover:not(.played):not(.disabled) {
+      transform: translateY(-8px);
+      box-shadow: 0 12px 24px rgba(0,0,0,0.65);
+    }
+
+    .card.selected {
+      transform: translateY(-12px) scale(1.03);
+      border-color: #66bb6a !important;
+      box-shadow: 0 0 22px rgba(102, 187, 106, 0.75);
+      background: linear-gradient(145deg, #22382c, #16261d);
+    }
+
+    .card.played, .card.disabled {
+      opacity: 0.32;
+      pointer-events: none;
+    }
+
+    .card-rarity-tag {
+      font-size: 10px;
+      font-weight: 900;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      padding: 2px 7px;
+      border-radius: 6px;
+      background: rgba(0,0,0,0.4);
+    }
+
+    .card-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 6px;
+      margin-bottom: 6px;
+    }
+
+    .card-title {
+      font-weight: 900;
+      font-size: 15px;
+      line-height: 1.2;
+    }
+
+    .card-pattern {
+      font-size: 11px;
+      font-weight: 800;
+      color: var(--gold);
+      margin-bottom: 6px;
+    }
+
+    .card-desc {
+      font-size: 12px;
+      color: #d1c7eb;
+      line-height: 1.4;
+    }
+
+    .end-turn-btn {
+      background: linear-gradient(135deg, #e65100, #bf360c);
+      color: white;
+      border: 1px solid #ff8a65;
+      padding: 12px 32px;
+      border-radius: 14px;
+      font-size: 15px;
+      font-weight: 900;
+      cursor: pointer;
+      letter-spacing: 0.5px;
+      box-shadow: 0 4px 15px rgba(230, 81, 0, 0.4);
+      transition: transform 0.1s ease;
+    }
+
+    .end-turn-btn:hover {
+      transform: scale(1.03);
+    }
+
+    /* Shop Layout */
+    .shop-layout {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
+
+    @media (max-width: 860px) {
+      .shop-layout {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .pack-card {
+      background: linear-gradient(135deg, #2a2042 0%, #1b142b 100%);
+      border: 2px solid var(--gold);
+      border-radius: 16px;
+      padding: 14px;
+      margin-bottom: 12px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      box-shadow: 0 6px 18px rgba(0,0,0,0.4);
+    }
+
+    .pack-card.super-pack {
+      border-color: #00bcd4;
+      background: linear-gradient(135deg, #132738 0%, #0d1b2a 100%);
+    }
+
+    .pack-title {
+      font-weight: 900;
+      font-size: 15px;
+      color: #ffe082;
+    }
+
+    .pack-card.super-pack .pack-title {
+      color: #80deea;
+    }
+
+    .pack-rates {
+      font-size: 11px;
+      color: var(--text-muted);
+      margin-top: 4px;
+      line-height: 1.4;
+    }
+
+    .buy-btn {
+      background: linear-gradient(135deg, #f5b942, #d48817);
+      color: #140c02;
+      border: none;
+      padding: 10px 16px;
+      border-radius: 12px;
+      font-weight: 900;
+      font-size: 14px;
+      cursor: pointer;
+      white-space: nowrap;
+      box-shadow: 0 4px 12px rgba(245, 185, 66, 0.35);
+      transition: transform 0.1s ease;
+    }
+
+    .buy-btn.diamond-btn {
+      background: linear-gradient(135deg, #00bcd4, #00838f);
+      color: white;
+    }
+
+    .buy-btn:hover:not(:disabled) {
+      transform: scale(1.04);
+    }
+
+    .buy-btn:disabled {
+      background: #3a324d;
+      color: #7c7294;
+      box-shadow: none;
+      cursor: not-allowed;
+    }
+
+    .inventory-list {
+      max-height: 180px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      margin-top: 6px;
+      padding-right: 4px;
+    }
+
+    .inventory-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: var(--bg-card);
+      padding: 8px 12px;
+      border-radius: 10px;
+      border: 1px solid var(--border-subtle);
+      font-size: 13px;
+    }
+
+    .mini-action-btn {
+      background: #2e7d32;
+      color: white;
+      border: none;
+      padding: 4px 10px;
+      border-radius: 6px;
+      font-size: 11px;
+      font-weight: 800;
+      cursor: pointer;
+    }
+
+    .mini-action-btn.remove {
+      background: #c62828;
+    }
+
+    .mini-action-btn.sell {
+      background: #f57f17;
+      color: #1a0f00;
+    }
+
+    .home-back-btn {
+      width: 100%;
+      background: linear-gradient(135deg, #382c54, #211836);
+      color: var(--text-main);
+      border: 2px solid var(--gold);
+      padding: 16px;
+      border-radius: 16px;
+      font-size: 16px;
+      font-weight: 900;
+      cursor: pointer;
+      margin-top: 14px;
+      box-shadow: 0 6px 20px rgba(0,0,0,0.5);
+      transition: all 0.15s ease;
+    }
+
+    .home-back-btn:hover {
+      background: linear-gradient(135deg, #46386b, #2b1f47);
+      border-color: #ffe082;
+      transform: translateY(-2px);
+    }
+
+    /* Modal Overlay */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(5, 3, 10, 0.85);
+      backdrop-filter: blur(6px);
+      display: none;
+      justify-content: center;
+      align-items: center;
+      z-index: 999;
+      padding: 20px;
+    }
+
+    .modal-overlay.active {
+      display: flex;
+    }
+
+    .reveal-box {
+      background: linear-gradient(160deg, #271d3d 0%, #140e21 100%);
+      border: 3px solid var(--gold);
+      border-radius: 24px;
+      padding: 28px 24px;
+      max-width: 380px;
+      width: 100%;
+      text-align: center;
+      box-shadow: 0 0 50px rgba(245, 185, 66, 0.45);
+      animation: popIn 0.3s cubic-bezier(0.18, 0.89, 0.32, 1.28);
+    }
+
+    @keyframes popIn {
+      from { transform: scale(0.75); opacity: 0; }
+      to { transform: scale(1); opacity: 1; }
+    }
+
+    .reveal-header {
+      font-size: 13px;
+      font-weight: 900;
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      color: var(--gold);
+      margin-bottom: 10px;
+    }
+
+    .reveal-icon {
+      font-size: 54px;
+      margin: 10px 0;
+      filter: drop-shadow(0 0 16px rgba(255,255,255,0.3));
+    }
+
+    .reveal-name {
+      font-size: 20px;
+      font-weight: 900;
+      margin-bottom: 6px;
+    }
+
+    .reveal-rarity {
+      display: inline-block;
+      padding: 4px 12px;
+      border-radius: 10px;
+      font-size: 12px;
+      font-weight: 900;
+      text-transform: uppercase;
+      margin-bottom: 12px;
+      background: rgba(0,0,0,0.45);
+    }
+
+    .reveal-desc {
+      font-size: 13px;
+      color: #dcd4f0;
+      line-height: 1.45;
+      margin-bottom: 20px;
+    }
+
+    .r-Common { color: var(--common); border-color: var(--common) !important; }
+    .r-Uncommon { color: var(--uncommon); border-color: var(--uncommon) !important; }
+    .r-Rare { color: var(--rare); border-color: var(--rare) !important; }
+    .r-Epic { color: var(--epic); border-color: var(--epic) !important; }
+    .r-Legendary { color: var(--legendary); border-color: var(--legendary) !important; }
+    .r-Mythic {
+      color: var(--mythic);
+      border-color: var(--mythic) !important;
+      text-shadow: 0 0 8px rgba(255, 23, 68, 0.6);
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Top Bar -->
+  <div class="top-bar">
+    <div class="game-title" onclick="showHomeScreen()">⚔️ EGGSCALIBER</div>
+    <div class="resources">
+      <div class="res-pill" id="player-tag-display">👤 EggMaster</div>
+      <div class="res-pill" id="gold-display">🪙 30 Gold</div>
+      <div class="res-pill res-diamond" id="diamond-display">💎 0 Diamonds</div>
+      <div class="res-pill" id="wave-display">🏆 Battle #1</div>
+      <button class="reset-save-btn" onclick="resetProgress()">Reset</button>
+    </div>
+  </div>
+
+  <!-- HOME SCREEN -->
+  <div class="screen active" id="home-screen">
+    <div class="home-container">
+      <div class="panel-box">
+        <h2>🏰 Royal Main Menu</h2>
+        <div style="margin-top: 14px;">
+          <button class="menu-btn primary" onclick="clickSoloGameBtn()">
+            <span>⚔️ Solo Game (Hardcore Challenges)</span>
+            <span style="font-size: 13px; background: rgba(0,0,0,0.2); padding: 4px 8px; border-radius: 6px;">Battle #<span id="home-battle-num">1</span></span>
+          </button>
+          
+          <button class="menu-btn" onclick="openShopFromHome()">
+            <span>🎁 Shop & Inventory</span>
+            <span>🪙 💎 🃏 🥚</span>
+          </button>
+
+          <button class="menu-btn" id="home-tutorial-btn" onclick="startTutorialFromHome()" style="border-color: #4cc9f0;">
+            <span style="color: #4cc9f0;" id="home-tutorial-text">🎓 Interactive Tutorial (Starter Pack)</span>
+            <span>📖</span>
+          </button>
+        </div>
+
+        <h2 style="margin-top: 16px;">⚙️ Player Settings</h2>
+        <div style="display: flex; gap: 8px; margin-top: 8px;">
+          <input type="text" id="username-input" placeholder="Enter username..." maxlength="14" style="flex: 1; background: var(--bg-card); color: white; border: 1px solid var(--border-subtle); padding: 10px 14px; border-radius: 10px; font-weight: 700;">
+          <button class="buy-btn" onclick="saveUsernameInput()">Save</button>
+        </div>
+
+        <h2 style="margin-top: 16px;">📜 Daily Quests & Achievements</h2>
+        <div id="quests-container" style="margin-top: 8px;"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- DIFFICULTY SELECT SCREEN -->
+  <div class="screen" id="difficulty-screen" style="max-width: 620px; text-align: center; margin-top: 24px;">
+    <div class="panel-box">
+      <h2 style="justify-content: center; font-size: 24px; margin-bottom: 12px;">🌟 Select Hardcore Challenge</h2>
+      <p style="color: var(--text-muted); font-size: 14px; margin-bottom: 20px;">
+        Choose your challenge level for <strong style="color:var(--gold);" id="diff-round-label">Battle #1</strong>! (Enemies have massive HP and counter-attack ferocity!)
+      </p>
+      
+      <div style="display: flex; flex-direction: column; gap: 12px;">
+        <div class="difficulty-card" id="diff-tutorial-card" style="border-color: #4cc9f0;" onclick="selectDiffAndStart('tutorial')">
+          <h3 style="color: #4cc9f0; font-size: 18px; margin-bottom: 4px;" id="diff-tutorial-title">🎓 Tutorial Mode</h3>
+          <p style="font-size: 13px; color: var(--text-muted);" id="diff-tutorial-desc">Guided instructions against Training Dummies. Rewards a Starter Pack!</p>
+        </div>
+
+        <div class="difficulty-card" onclick="selectDiffAndStart('easy')">
+          <h3 style="color: #66bb6a; font-size: 18px; margin-bottom: 4px;">🟢 Veteran Trial</h3>
+          <p style="font-size: 13px; color: var(--text-muted);">Enemies have +25% HP and strike with boosted power. Earns <strong>1 Diamond</strong> per win.</p>
+        </div>
+
+        <div class="difficulty-card" onclick="selectDiffAndStart('normal')">
+          <h3 style="color: #f5b942; font-size: 18px; margin-bottom: 4px;">🟡 Hardcore Assault</h3>
+          <p style="font-size: 13px; color: var(--text-muted);">Enemies have +50% HP, aggressive AI, and hit heavily every turn. Earns <strong>2 Diamonds</strong> per win.</p>
+        </div>
+
+        <div class="difficulty-card" onclick="selectDiffAndStart('hard')">
+          <h3 style="color: #ff5252; font-size: 18px; margin-bottom: 4px;">🔴 Nightmare Annihilation</h3>
+          <p style="font-size: 13px; color: var(--text-muted);">Extreme enemy stat scaling (+80% HP & double attack force)! Earns <strong>3 Diamonds</strong> per win!</p>
+        </div>
+      </div>
+      <button class="home-back-btn" onclick="showHomeScreen()">🏠 Return to Home Menu</button>
+    </div>
+  </div>
+
+  <!-- BATTLE SCREEN -->
+  <div class="screen" id="battle-screen">
+    <div class="tutorial-banner" id="tutorial-banner">
+      <div id="tutorial-step-text">🎓 Step 1: Click a card in your hand below to select it!</div>
+      <div style="font-size: 12px; color: #90e0ef; white-space: nowrap;">Tutorial Guide</div>
+    </div>
+
+    <div class="battle-arena">
+      <div class="arena-header">
+        <div class="turn-info" id="turn-label">Select a card from your hand, then hover/click one of your 5 eggs!</div>
+        <div class="plays-badge" id="battle-plays-display">🃏 Card Plays Active</div>
+      </div>
+
+      <div class="lanes-container" id="lanes-container"></div>
+    </div>
+
+    <div class="battle-log" id="battle-log">Battle started! Active deck must keep at least 5 cards.</div>
+
+    <div class="hand-area">
+      <div class="hand-prompt" id="hand-prompt-label">Your Hand (Drawn from Active Deck)</div>
+      <div class="cards-row" id="hand-container"></div>
+      <button class="end-turn-btn" onclick="endPlayerTurn()">End Turn ⏭️</button>
+    </div>
+
+    <button class="home-back-btn" onclick="showHomeScreen()">🏠 Return to Home Menu</button>
+  </div>
+
+  <!-- SHOP & INVENTORIES SCREEN -->
+  <div class="screen" id="shop-screen">
+    <div class="battle-log" id="shop-banner">🎉 Welcome to the Shop & Inventory! Buy upgrades, booster packs, or manage your gear.</div>
+
+    <div class="shop-layout">
+      <div class="panel-box">
+        <h2>🎁 Packs & Diamond Upgrades</h2>
+        <div id="super-upgrades-container" style="margin-bottom: 14px;"></div>
+        <div id="packs-container"></div>
+
+        <h3 style="font-size:13px; margin-top:14px; color:var(--text-muted); text-transform:uppercase; display:flex; justify-content:space-between;">
+          <span>Active Deck (<span id="deck-count">0</span>/20 | Min 5)</span>
+        </h3>
+        <div class="inventory-list" id="active-deck-list"></div>
+
+        <h3 style="font-size:13px; margin-top:14px; color:var(--text-muted); text-transform:uppercase; display:flex; justify-content:space-between;">
+          <span>Spare Cards Inventory (<span id="spare-cards-count">0</span>)</span>
+        </h3>
+        <div class="inventory-list" id="spare-cards-list"></div>
+      </div>
+
+      <div class="panel-box">
+        <h2>🥚 Egg Roster & Inventory</h2>
+        
+        <h3 style="font-size:13px; margin-bottom:8px; color:var(--text-muted); text-transform:uppercase;">
+          Active Battle Squad (5 Spots)
+        </h3>
+        <div class="inventory-list" id="roster-list"></div>
+
+        <h3 style="font-size:13px; margin-top:16px; margin-bottom:8px; color:var(--text-muted); text-transform:uppercase;">
+          Spare Eggs Inventory (<span id="spare-eggs-count">0</span>)
+        </h3>
+        <div class="inventory-list" id="spare-eggs-list"></div>
+      </div>
+    </div>
+
+    <button class="home-back-btn" onclick="showHomeScreen()">🏠 Return to Home Menu</button>
+  </div>
+
+  <!-- PACK OPENING REVEAL MODAL -->
+  <div class="modal-overlay" id="reveal-modal">
+    <div class="reveal-box" id="reveal-box">
+      <div class="reveal-header" id="reveal-header">🎁 PACK OPENED!</div>
+      <div class="reveal-icon" id="reveal-icon">🃏</div>
+      <div class="reveal-name" id="reveal-name">Card Name</div>
+      <div class="reveal-rarity" id="reveal-rarity">Common</div>
+      <div class="reveal-desc" id="reveal-desc">Description here</div>
+      <button class="buy-btn" style="width:100%; padding:12px; font-size:16px;" onclick="closeRevealModal()">Awesome! Collect</button>
+    </div>
+  </div>
+
+  <script>
+    const SAVE_KEY = 'eggscaliberSaveHardcoreChallengesV22';
+
+    const ENEMY_NAME_POOL = [
+      'Sir Yolk-A-Lot', 'Count Scrambled', 'Baron Omelet', 'Lord Shellshock', 
+      'Lady Albumin', 'Duke Poach', 'Knight Sunny-Side', 'Archduke Yolk', 
+      'Prickly Yolk', 'Sir Hardboiled', 'Emperor Yolk', 'Sultan Shell',
+      'General Yolk', 'Captain Whisk', 'Commander Fry', 'Viscount Yolk'
+    ];
+
+    const RARITY_WEIGHTS = [
+      { rarity: 'Common', weight: 49.5 },
+      { rarity: 'Uncommon', weight: 26 },
+      { rarity: 'Rare', weight: 14 },
+      { rarity: 'Epic', weight: 7 },
+      { rarity: 'Legendary', weight: 3 },
+      { rarity: 'Mythic', weight: 0.5 }
+    ];
+
+    function rollRarity() {
+      const total = RARITY_WEIGHTS.reduce((sum, r) => sum + r.weight, 0);
+      let roll = Math.random() * total;
+      for (const entry of RARITY_WEIGHTS) {
+        if (roll < entry.weight) return entry.rarity;
+        roll -= entry.weight;
+      }
+      return 'Common';
+    }
+
+    const CARD_CATALOG = [
+      { id: 'basic_peck', name: 'Basic Peck', rarity: 'Common', patternLabel: '➡️ Straight Ahead', type: 'straight', value: 4, desc: 'Deal 4 damage to the enemy directly across.' },
+      { id: 'basic_guard', name: 'Thin Shell Guard', rarity: 'Common', patternLabel: '🛡️ Self Shield', type: 'shield', value: 4, desc: 'Give your chosen egg +4 Shield.' },
+      { id: 'basic_warmth', name: 'Nest Warmth', rarity: 'Common', patternLabel: '❤️ Self Heal', type: 'heal', value: 4, desc: 'Restore 4 HP to your chosen egg.' },
+      { id: 'diag_up', name: 'Updraft Jab', rarity: 'Common', patternLabel: '↗️ Diagonal Up', type: 'diag_up', value: 5, desc: 'Strike the enemy diagonally ABOVE for 5 damage.' },
+      { id: 'diag_down', name: 'Downdraft Jab', rarity: 'Common', patternLabel: '↘️ Diagonal Down', type: 'diag_down', value: 5, desc: 'Strike the enemy diagonally BELOW for 5 damage.' },
+      { id: 'side_step', name: 'Twin Yolk Tap', rarity: 'Common', patternLabel: '↗️↘️ Both Diagonals', type: 'diagonals', value: 3, desc: 'Deal 3 damage to BOTH diagonal neighbors.' },
+      { id: 'quick_poke', name: 'Quick Poke', rarity: 'Common', patternLabel: '➡️ Fast Straight', type: 'straight', value: 3, desc: 'A quick jab for 3 damage.' },
+      { id: 'soft_shell', name: 'Shell Patch', rarity: 'Common', patternLabel: '🛡️ Minor Shield', type: 'shield', value: 3, desc: 'Grant +3 Shield to target egg.' },
+
+      { id: 'heavy_bash', name: 'Hard-Boiled Bash', rarity: 'Uncommon', patternLabel: '➡️ Heavy Straight', type: 'straight', value: 7, desc: 'Smash the enemy directly across for 7 damage.' },
+      { id: 'cross_slash', name: 'Cross-Yolk Slash', rarity: 'Uncommon', patternLabel: '↗️↘️ Diagonal Up & Down', type: 'diagonals', value: 5, desc: 'Deal 5 damage to BOTH diagonal enemies!' },
+      { id: 'fork_up', name: 'Upper Fork Whisk', rarity: 'Uncommon', patternLabel: '↗️➡️ Straight + Diag Up', type: 'fork_up', value: 5, desc: 'Hit straight across AND diagonally up for 5 damage each.' },
+      { id: 'fork_down', name: 'Lower Fork Whisk', rarity: 'Uncommon', patternLabel: '➡️↘️ Straight + Diag Down', type: 'fork_down', value: 5, desc: 'Hit straight across AND diagonally down for 5 damage each.' },
+      { id: 'ricochet', name: 'Ricochet Shell', rarity: 'Uncommon', patternLabel: '🔀 Mirror Opposite Lane', type: 'mirror', value: 7, desc: 'Bounce a shot to the opposite mirror lane for 7 damage!' },
+      { id: 'iron_yolk', name: 'Iron Albumen', rarity: 'Uncommon', patternLabel: '🛡️ Strong Shield', type: 'shield', value: 8, desc: 'Grant your chosen egg +8 Shield.' },
+      { id: 'splash_shell', name: 'Splash Shell', rarity: 'Uncommon', patternLabel: '🌊 2-Lane Splash', type: 'fork_down', value: 4, desc: 'Splash direct and down for 4 damage.' },
+      { id: 'rejuvenate', name: 'Rejuvenate', rarity: 'Uncommon', patternLabel: '✨ Medium Heal', type: 'heal', value: 7, desc: 'Restore 7 HP to target egg.' },
+
+      { id: 'cleave', name: 'Eggsplosive Cleave', rarity: 'Rare', patternLabel: '↗️➡️↘️ 3-Lane Cone', type: 'cleave', value: 5, desc: 'Blast straight across PLUS both diagonal neighbors for 5 damage each!' },
+      { id: 'sniper', name: 'Sniper Yolk', rarity: 'Rare', patternLabel: '🎯 Lowest HP Enemy', type: 'sniper', value: 9, desc: 'Snipe the weakest living enemy for 9 damage!' },
+      { id: 'vampire_bite', name: 'Yolk Leech', rarity: 'Rare', patternLabel: '🧛 Straight + Self Heal', type: 'leech', value: 6, desc: 'Deal 6 damage straight and heal your egg for 5 HP!' },
+      { id: 'bastion_strike', name: 'Shield Bash', rarity: 'Rare', patternLabel: '🛡️➡️ Shield + Attack', type: 'shield_bash', value: 6, desc: 'Gain +5 Shield and deal 6 damage to the enemy across!' },
+      { id: 'scramble', name: 'Pan Scramble', rarity: 'Rare', patternLabel: '💥 All 5 Enemies', type: 'aoe', value: 4, desc: 'Hit ALL 5 enemy eggs for 4 damage each!' },
+      { id: 'heavy_artillery', name: 'Heavy Artillery', rarity: 'Rare', patternLabel: '➡️ Massive Straight', type: 'straight', value: 10, desc: 'Deal 10 heavy damage straight across.' },
+
+      { id: 'knight_lance', name: 'Knight’s L-Jump', rarity: 'Epic', patternLabel: '♞ 2 Lanes Up/Down', type: 'knight', value: 9, desc: 'Leap 2 lanes away to strike for 9 surprise damage!' },
+      { id: 'paladin_aura', name: 'Royal Omelet Aura', rarity: 'Epic', patternLabel: '✨ Heal All Allies', type: 'team_heal', value: 5, desc: 'Restore 5 HP to ALL living eggs on your team!' },
+      { id: 'meteor_yolk', name: 'Yolk Meteor', rarity: 'Epic', patternLabel: '☄️ Highest HP Enemy', type: 'heavy_sniper', value: 12, desc: 'Crush the highest-HP enemy on the board for 12 damage!' },
+      { id: 'egg_wall', name: 'Impenetrable Wall', rarity: 'Epic', patternLabel: '🛡️ Massive Shield', type: 'shield', value: 12, desc: 'Grant target egg +12 Shield.' },
+
+      { id: 'excalibur', name: 'EGGSCALIBER BLADE', rarity: 'Legendary', patternLabel: '⚔️ Mega Straight + Cleave', type: 'excalibur', value: 14, desc: 'Deal 14 massive damage straight and 7 damage to both diagonals!' },
+      { id: 'apocalypse', name: 'Grand Eggpocalypse', rarity: 'Legendary', patternLabel: '🌋 Devastate All 5', type: 'aoe', value: 7, desc: 'Unleash divine yolk fury, dealing 7 damage to ALL 5 enemy eggs!' },
+
+      { id: 'omega_nova', name: 'Omega Yolk Nova', rarity: 'Mythic', patternLabel: '🌌 All Enemies + Team Heal', type: 'mythic_nova', value: 12, desc: 'Obliterate ALL 5 enemies for 12 damage each AND heal your entire squad for 6 HP!' },
+      { id: 'chrono_rewind', name: 'Chrono Shell Rewind', rarity: 'Mythic', patternLabel: '⏳ Team Shield + Mega Blast', type: 'mythic_chrono', value: 12, desc: 'Grant +15 Shield to ALL living allies and deal 12 damage straight across!' }
+    ];
+
+    // ORIGINAL UNALTERED EGG STATS
+    const EGG_CATALOG = [
+      { id: 'white', name: 'White Egg', emoji: '🥚', rarity: 'Common', maxHp: 10, atkBonus: 0, powerText: 'Fragile starter egg (10 HP).' },
+      { id: 'speckled', name: 'Speckled Egg', emoji: '🪺', rarity: 'Common', maxHp: 13, atkBonus: 0, powerText: 'Sturdy wild shell (13 HP).' },
+
+      { id: 'brown', name: 'Brown Egg', emoji: '🟤', rarity: 'Uncommon', maxHp: 16, atkBonus: 0, powerText: 'Thick shell (16 HP).' },
+      { id: 'spotted', name: 'Striker Egg', emoji: '⚡', rarity: 'Uncommon', maxHp: 13, atkBonus: 1, powerText: '+1 Bonus Damage on all attacks.' },
+      { id: 'moss', name: 'Mossy Egg', emoji: '🌿', rarity: 'Uncommon', maxHp: 15, atkBonus: 0, powerText: 'Regenerates +1 HP per turn.', regen: 1 },
+
+      { id: 'deviled', name: 'Deviled Egg', emoji: '😈', rarity: 'Rare', maxHp: 15, atkBonus: 2, powerText: '+2 Bonus Damage on all attacks!' },
+      { id: 'knight_egg', name: 'Armored Knight Egg', emoji: '🛡️', rarity: 'Rare', maxHp: 18, atkBonus: 1, powerText: 'Starts with +6 Shield & +1 Atk.', startShield: 6 },
+      { id: 'robin', name: 'Azure Robin Egg', emoji: '💎', rarity: 'Rare', maxHp: 16, atkBonus: 2, powerText: 'Swift & sharp (+2 Bonus Damage).' },
+
+      { id: 'magma', name: 'Magma Egg', emoji: '🔥', rarity: 'Epic', maxHp: 20, atkBonus: 3, powerText: '+3 Bonus Damage on every hit!' },
+      { id: 'crystal', name: 'Crystal Fabergé', emoji: '🔮', rarity: 'Epic', maxHp: 22, atkBonus: 2, powerText: 'Starts with +10 Shield & +2 Atk.', startShield: 10 },
+
+      { id: 'golden', name: 'Golden Goose Egg', emoji: '🌟', rarity: 'Legendary', maxHp: 26, atkBonus: 4, powerText: '26 HP, +4 Bonus & +2 regen!', regen: 2 },
+      { id: 'dragon', name: 'Dragonfire Egg', emoji: '🐉', rarity: 'Legendary', maxHp: 28, atkBonus: 5, powerText: '28 HP & +5 Massive Bonus Damage!' },
+
+      { id: 'phoenix', name: 'Phoenix Rebirth Egg', emoji: '🔥🦅', rarity: 'Mythic', maxHp: 34, atkBonus: 6, powerText: '34 HP, +6 Bonus Damage & +4 HP regen per turn!', regen: 4 },
+      { id: 'cosmic', name: 'Cosmic Void Egg', emoji: '🌌', rarity: 'Mythic', maxHp: 36, atkBonus: 7, powerText: '36 HP, +7 Bonus Damage & starts with +15 Shield!', startShield: 15 }
+    ];
+
+    const CARD_PACK_COST = 20;
+    const EGG_PACK_COST = 25;
+    const SUPER_PACK_COST = 7;
+    const MAX_DECK_SIZE = 20;
+    const MIN_DECK_SIZE = 5;
+
+    let username = 'EggMaster';
+    let gold = 30;
+    let diamonds = 0;
+    let battleNumber = 1;
+    let maxPlaysPerTurn = 1;
+    let tutorialCompleted = false;
+
+    let superDamageLevel = 0;
+    let superShieldLevel = 0;
+
+    let questWinsClaimed = false;
+    let questPacksClaimed = false;
+    let achievementBattle5Claimed = false;
+
+    let playerEggs = [
+      createEggInstance('white'),
+      createEggInstance('white'),
+      createEggInstance('white'),
+      createEggInstance('white'),
+      createEggInstance('white')
+    ];
+    let spareEggs = [];
+
+    let playerDeck = [
+      CARD_CATALOG.find(c => c.id === 'basic_peck'),
+      CARD_CATALOG.find(c => c.id === 'heavy_bash'),
+      CARD_CATALOG.find(c => c.id === 'cross_slash'),
+      CARD_CATALOG.find(c => c.id === 'diag_up'),
+      CARD_CATALOG.find(c => c.id === 'basic_guard')
+    ];
+    let spareCards = [];
+
+    function saveProgress() {
+      const data = {
+        username,
+        gold,
+        diamonds,
+        battleNumber,
+        maxPlaysPerTurn,
+        tutorialCompleted,
+        superDamageLevel,
+        superShieldLevel,
+        questWinsClaimed,
+        questPacksClaimed,
+        achievementBattle5Claimed,
+        eggIds: playerEggs.map(e => e.id),
+        spareEggIds: spareEggs.map(e => e.id),
+        deckIds: playerDeck.map(c => c.id),
+        spareCardIds: spareCards.map(c => c.id)
+      };
+      localStorage.setItem(SAVE_KEY, JSON.stringify(data));
+    }
+
+    function loadProgress() {
+      const raw = localStorage.getItem(SAVE_KEY);
+      if (!raw) return false;
+      try {
+        const data = JSON.parse(raw);
+        if (data.username) username = data.username;
+        if (typeof data.gold === 'number') gold = data.gold;
+        if (typeof data.diamonds === 'number') diamonds = data.diamonds;
+        if (typeof data.battleNumber === 'number') battleNumber = data.battleNumber;
+        if (typeof data.maxPlaysPerTurn === 'number') maxPlaysPerTurn = data.maxPlaysPerTurn;
+        if (typeof data.tutorialCompleted === 'boolean') tutorialCompleted = data.tutorialCompleted;
+        if (typeof data.superDamageLevel === 'number') superDamageLevel = data.superDamageLevel;
+        if (typeof data.superShieldLevel === 'number') superShieldLevel = data.superShieldLevel;
+        if (typeof data.questWinsClaimed === 'boolean') questWinsClaimed = data.questWinsClaimed;
+        if (typeof data.questPacksClaimed === 'boolean') questPacksClaimed = data.questPacksClaimed;
+        if (typeof data.achievementBattle5Claimed === 'boolean') achievementBattle5Claimed = data.achievementBattle5Claimed;
+
+        if (Array.isArray(data.eggIds) && data.eggIds.length === 5) {
+          playerEggs = data.eggIds.map(id => createEggInstance(id));
+        }
+        if (Array.isArray(data.spareEggIds)) {
+          spareEggs = data.spareEggIds.map(id => createEggInstance(id));
+        }
+        if (Array.isArray(data.deckIds)) {
+          playerDeck = data.deckIds.map(id => CARD_CATALOG.find(c => c.id === id)).filter(Boolean);
+        }
+        if (Array.isArray(data.spareCardIds)) {
+          spareCards = data.spareCardIds.map(id => CARD_CATALOG.find(c => c.id === id)).filter(Boolean);
+        }
+        return true;
+      } catch (e) {
+        console.error('Save load error:', e);
+        return false;
+      }
+    }
+
+    function resetProgress() {
+      if (confirm('Reset your entire Eggscaliber save?')) {
+        localStorage.removeItem(SAVE_KEY);
+        location.reload();
+      }
+    }
+
+    function hideAllScreens() {
+      document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+    }
+
+    function showHomeScreen() {
+      hideAllScreens();
+      document.getElementById('home-screen').classList.add('active');
+      document.getElementById('home-battle-num').textContent = battleNumber;
+      document.getElementById('username-input').value = username;
+
+      const tutBtn = document.getElementById('home-tutorial-btn');
+      const tutTxt = document.getElementById('home-tutorial-text');
+      if (tutorialCompleted) {
+        tutBtn.style.opacity = '0.4';
+        tutBtn.style.pointerEvents = 'none';
+        tutTxt.textContent = '🎓 Interactive Tutorial (Completed)';
+      } else {
+        tutBtn.style.opacity = '1';
+        tutBtn.style.pointerEvents = 'auto';
+        tutTxt.textContent = '🎓 Interactive Tutorial (Starter Pack)';
+      }
+
+      updateTopBar();
+      renderQuests();
+    }
+
+    function saveUsernameInput() {
+      const val = document.getElementById('username-input').value.trim();
+      if (val) {
+        username = val;
+        saveProgress();
+        updateTopBar();
+        alert(`Username updated to "${username}"!`);
+      }
+    }
+
+    function clickSoloGameBtn() {
+      hideAllScreens();
+      document.getElementById('diff-round-label').textContent = `Battle #${battleNumber}`;
+
+      const tutCard = document.getElementById('diff-tutorial-card');
+      const tutTitle = document.getElementById('diff-tutorial-title');
+      const tutDesc = document.getElementById('diff-tutorial-desc');
+      if (tutorialCompleted) {
+        tutCard.classList.add('disabled');
+        tutTitle.textContent = '🎓 Tutorial Completed (Already Claimed)';
+        tutDesc.textContent = 'You have already claimed your one-time starter pack!';
+      } else {
+        tutCard.classList.remove('disabled');
+        tutTitle.textContent = '🎓 Tutorial Mode';
+        tutDesc.textContent = 'Guided instructions against Training Dummies. Rewards a Starter Pack!';
+      }
+
+      document.getElementById('difficulty-screen').classList.add('active');
+    }
+
+    function startTutorialFromHome() {
+      if (tutorialCompleted) {
+        alert('You have already completed the tutorial and claimed your starter pack!');
+        return;
+      }
+      selectDiffAndStart('tutorial');
+    }
+
+    function openShopFromHome() {
+      hideAllScreens();
+      document.getElementById('shop-screen').classList.add('active');
+      setShopBanner('Welcome to the Shop & Inventory! Buy upgrades, booster packs, or manage your gear.');
+      renderShop();
+      renderSuperUpgrades();
+    }
+
+    function selectDiffAndStart(diff) {
+      if (diff === 'tutorial' && tutorialCompleted) {
+        alert('Tutorial can only be completed once!');
+        return;
+      }
+      difficulty = diff;
+      hideAllScreens();
+      document.getElementById('battle-screen').classList.add('active');
+      saveProgress();
+      startNextBattle();
+    }
+
+    let difficulty = 'normal';
+    let enemyEggs = [];
+    let playsRemaining = 1;
+    let currentHand = [];
+    let selectedCardIndex = null;
+    let hoveredLaneIndex = null;
+
+    function createEggInstance(catalogId) {
+      const template = EGG_CATALOG.find(e => e.id === catalogId) || EGG_CATALOG[0];
+      const baseAtk = template.atkBonus + superDamageLevel;
+      const baseShield = (template.startShield || 0) + (superShieldLevel * 3);
+      return {
+        ...template,
+        hp: template.maxHp,
+        atkBonus: baseAtk,
+        shield: baseShield
+      };
+    }
+
+    function generateRandomEnemySquad(level) {
+      const squad = [];
+      if (difficulty === 'tutorial') {
+        for (let i = 0; i < 5; i++) {
+          squad.push({
+            id: 'dummy',
+            name: `Training Dummy #${i + 1}`,
+            emoji: '🎯',
+            rarity: 'Common',
+            maxHp: 8,
+            hp: 8,
+            shield: 0,
+            atkBonus: 0,
+            powerText: 'Practice dummy'
+          });
+        }
+        return squad;
+      }
+
+      // HARDER ENEMY CHALLENGE SCALING (+50% to +80% HP and brutal attack boosts)
+      let hpMultiplier = 1.4;
+      let atkMultiplier = 1.6;
+      if (difficulty === 'easy') { hpMultiplier = 1.2; atkMultiplier = 1.3; }
+      if (difficulty === 'normal') { hpMultiplier = 1.5; atkMultiplier = 1.7; }
+      if (difficulty === 'hard') { hpMultiplier = 1.9; atkMultiplier = 2.1; }
+
+      const shuffledNames = [...ENEMY_NAME_POOL].sort(() => 0.5 - Math.random());
+
+      for (let i = 0; i < 5; i++) {
+        let pickedRarity = rollRarity();
+        if (level === 1 && (pickedRarity === 'Epic' || pickedRarity === 'Legendary' || pickedRarity === 'Mythic')) {
+          pickedRarity = Math.random() < 0.5 ? 'Uncommon' : 'Rare';
+        }
+        const pool = EGG_CATALOG.filter(e => e.rarity === pickedRarity);
+        const template = pool[Math.floor(Math.random() * pool.length)] || EGG_CATALOG[0];
+        const egg = createEggInstance(template.id);
+        
+        const bonusHp = Math.floor((level - 1) * 5);
+        egg.maxHp = Math.round((egg.maxHp + bonusHp) * hpMultiplier);
+        egg.hp = egg.maxHp;
+        egg.atkBonus = Math.max(egg.atkBonus, Math.round((egg.atkBonus + Math.floor(level * 1.2)) * atkMultiplier));
+        egg.name = shuffledNames[i] || `Rival Egg #${i + 1}`;
+        squad.push(egg);
+      }
+      return squad;
+    }
+
+    function updateTutorialGuide() {
+      const banner = document.getElementById('tutorial-banner');
+      const stepText = document.getElementById('tutorial-step-text');
+      if (difficulty !== 'tutorial') {
+        banner.classList.remove('active');
+        return;
+      }
+
+      banner.classList.add('active');
+      if (playsRemaining <= 0) {
+        stepText.innerHTML = '🎓 <strong>Step 3:</strong> You used your card play! Click the orange <strong>End Turn ⏭️</strong> button below.';
+      } else if (selectedCardIndex !== null) {
+        stepText.innerHTML = '🎓 <strong>Step 2:</strong> Hover over your 5 eggs on the left to see the red 🎯 TARGET lane, then click one of your eggs!';
+      } else {
+        stepText.innerHTML = '🎓 <strong>Step 1:</strong> Click any card in <strong>Your Hand</strong> below to select it!';
+      }
+    }
+
+    function getTargetEnemyIndices(card, laneIndex) {
+      if (!card) return [];
+      const targets = [];
+
+      if (card.type === 'straight' || card.type === 'leech' || card.type === 'shield_bash' || card.type === 'mythic_chrono') {
+        if (enemyEggs[laneIndex] && enemyEggs[laneIndex].hp > 0) {
+          targets.push(laneIndex);
+        } else {
+          const fallback = enemyEggs.findIndex(e => e.hp > 0);
+          if (fallback !== -1) targets.push(fallback);
+        }
+      } else if (card.type === 'diag_up') {
+        if (laneIndex - 1 >= 0 && enemyEggs[laneIndex - 1].hp > 0) targets.push(laneIndex - 1);
+      } else if (card.type === 'diag_down') {
+        if (laneIndex + 1 < 5 && enemyEggs[laneIndex + 1].hp > 0) targets.push(laneIndex + 1);
+      } else if (card.type === 'diagonals') {
+        if (laneIndex - 1 >= 0 && enemyEggs[laneIndex - 1].hp > 0) targets.push(laneIndex - 1);
+        if (laneIndex + 1 < 5 && enemyEggs[laneIndex + 1].hp > 0) targets.push(laneIndex + 1);
+      } else if (card.type === 'fork_up') {
+        if (enemyEggs[laneIndex] && enemyEggs[laneIndex].hp > 0) targets.push(laneIndex);
+        if (laneIndex - 1 >= 0 && enemyEggs[laneIndex - 1].hp > 0) targets.push(laneIndex - 1);
+      } else if (card.type === 'fork_down') {
+        if (enemyEggs[laneIndex] && enemyEggs[laneIndex].hp > 0) targets.push(laneIndex);
+        if (laneIndex + 1 < 5 && enemyEggs[laneIndex + 1].hp > 0) targets.push(laneIndex + 1);
+      } else if (card.type === 'cleave' || card.type === 'excalibur') {
+        [laneIndex - 1, laneIndex, laneIndex + 1].forEach(idx => {
+          if (idx >= 0 && idx < 5 && enemyEggs[idx].hp > 0) targets.push(idx);
+        });
+      } else if (card.type === 'mirror') {
+        const mirrorIdx = 4 - laneIndex;
+        if (enemyEggs[mirrorIdx] && enemyEggs[mirrorIdx].hp > 0) {
+          targets.push(mirrorIdx);
+        } else {
+          const fallback = enemyEggs.findIndex(e => e.hp > 0);
+          if (fallback !== -1) targets.push(fallback);
+        }
+      } else if (card.type === 'knight') {
+        [laneIndex - 2, laneIndex + 2].forEach(idx => {
+          if (idx >= 0 && idx < 5 && enemyEggs[idx].hp > 0) targets.push(idx);
+        });
+      } else if (card.type === 'sniper') {
+        let lowestIdx = -1;
+        let lowestHp = Infinity;
+        enemyEggs.forEach((e, idx) => {
+          if (e.hp > 0 && e.hp < lowestHp) {
+            lowestHp = e.hp;
+            lowestIdx = idx;
+          }
+        });
+        if (lowestIdx !== -1) targets.push(lowestIdx);
+      } else if (card.type === 'heavy_sniper') {
+        let highestIdx = -1;
+        let highestHp = -1;
+        enemyEggs.forEach((e, idx) => {
+          if (e.hp > 0 && e.hp > highestHp) {
+            highestHp = e.hp;
+            highestIdx = idx;
+          }
+        });
+        if (highestIdx !== -1) targets.push(highestIdx);
+      } else if (card.type === 'aoe' || card.type === 'mythic_nova') {
+        enemyEggs.forEach((e, idx) => {
+          if (e.hp > 0) targets.push(idx);
+        });
+      }
+
+      return targets;
+    }
+
+    function getCardsDrawnCount() {
+      if (maxPlaysPerTurn === 1) return 3;
+      if (maxPlaysPerTurn === 2) return 4;
+      return 5;
+    }
+
+    function startNextBattle() {
+      playerEggs.forEach(e => {
+        e.hp = e.maxHp;
+        e.shield = (e.startShield || 0) + (superShieldLevel * 3);
+      });
+      enemyEggs = generateRandomEnemySquad(battleNumber);
+
+      startPlayerTurn();
+    }
+
+    function startPlayerTurn() {
+      playsRemaining = maxPlaysPerTurn;
+      selectedCardIndex = null;
+      hoveredLaneIndex = null;
+
+      const drawCount = getCardsDrawnCount();
+      currentHand = [];
+      const drawPool = playerDeck.length > 0 ? playerDeck : [{ id: 'basic_peck', name: 'Basic Peck', rarity: 'Common', patternLabel: '➡️ Straight Ahead', type: 'straight', value: 4, desc: 'Deal 4 damage.' }];
+      for (let i = 0; i < drawCount; i++) {
+        const randCard = drawPool[Math.floor(Math.random() * drawPool.length)];
+        currentHand.push({ ...randCard, played: false });
+      }
+
+      updateTopBar();
+      updateTutorialGuide();
+      renderLanes();
+      renderHand();
+      setLog(`Battle #${battleNumber}: Play ${maxPlaysPerTurn} card(s) (Drew ${drawCount} cards)!`);
+    }
+
+    function selectCard(index) {
+      const card = currentHand[index];
+      if (!card || card.played || playsRemaining <= 0) return;
+
+      selectedCardIndex = (selectedCardIndex === index) ? null : index;
+      updateTutorialGuide();
+      renderHand();
+      renderLanes();
+
+      if (selectedCardIndex !== null) {
+        setLog(`Selected "${card.name}" (${card.patternLabel}). Hover over your 5 eggs to aim!`);
+      } else {
+        setLog(`Card deselected.`);
+      }
+    }
+
+    function setHoveredLane(laneIdx) {
+      if (selectedCardIndex === null) return;
+      if (hoveredLaneIndex !== laneIdx) {
+        hoveredLaneIndex = laneIdx;
+        renderLanes();
+      }
+    }
+
+    function clearHoveredLane() {
+      if (hoveredLaneIndex !== null) {
+        hoveredLaneIndex = null;
+        renderLanes();
+      }
+    }
+
+    function useCardOnPlayerEgg(laneIndex) {
+      if (playsRemaining <= 0) {
+        setLog(`No card plays left this turn! Click End Turn.`);
+        return;
+      }
+      if (selectedCardIndex === null) {
+        setLog(`Select a card from your hand first!`);
+        return;
+      }
+
+      const actorEgg = playerEggs[laneIndex];
+      if (!actorEgg || actorEgg.hp <= 0) {
+        setLog(`That egg is cracked! Choose a living egg.`);
+        return;
+      }
+
+      const card = currentHand[selectedCardIndex];
+
+      if (card.type === 'shield') {
+        playsRemaining--;
+        card.played = true;
+        selectedCardIndex = null;
+        hoveredLaneIndex = null;
+        actorEgg.shield += card.value;
+        setLog(`${actorEgg.name} gained +${card.value} Shield!`);
+      } else if (card.type === 'heal') {
+        playsRemaining--;
+        card.played = true;
+        selectedCardIndex = null;
+        hoveredLaneIndex = null;
+        actorEgg.hp = Math.min(actorEgg.maxHp, actorEgg.hp + card.value);
+        setLog(`${actorEgg.name} healed for +${card.value} HP!`);
+      } else if (card.type === 'team_heal') {
+        playsRemaining--;
+        card.played = true;
+        selectedCardIndex = null;
+        hoveredLaneIndex = null;
+        playerEggs.forEach(e => {
+          if (e.hp > 0) e.hp = Math.min(e.maxHp, e.hp + card.value);
+        });
+        setLog(`${actorEgg.name} cast ${card.name}, healing ALL living allies for +${card.value} HP!`);
+      } else {
+        const targetIndices = getTargetEnemyIndices(card, laneIndex);
+        if (targetIndices.length === 0) {
+          setLog(`No living enemies in that attack angle! Try another egg spot.`);
+          return;
+        }
+
+        playsRemaining--;
+        card.played = true;
+        selectedCardIndex = null;
+        hoveredLaneIndex = null;
+
+        if (card.type === 'leech') {
+          actorEgg.hp = Math.min(actorEgg.maxHp, actorEgg.hp + 5);
+        } else if (card.type === 'shield_bash') {
+          actorEgg.shield += 5;
+        } else if (card.type === 'mythic_nova') {
+          playerEggs.forEach(e => {
+            if (e.hp > 0) e.hp = Math.min(e.maxHp, e.hp + 6);
+          });
+        } else if (card.type === 'mythic_chrono') {
+          playerEggs.forEach(e => {
+            if (e.hp > 0) e.shield += 15;
+          });
+        }
+
+        const hitNames = [];
+        targetIndices.forEach(idx => {
+          let dmg = card.value + actorEgg.atkBonus;
+          if (card.type === 'excalibur' && idx !== laneIndex) {
+            dmg = Math.floor(card.value / 2) + actorEgg.atkBonus;
+          }
+          dealDamage(enemyEggs[idx], dmg);
+          hitNames.push(`Spot ${idx + 1} (${enemyEggs[idx].name} for ${dmg})`);
+        });
+
+        setLog(`${actorEgg.name} used ${card.name} → Hit ${hitNames.join(', ')}!`);
+      }
+
+      updateTopBar();
+      updateTutorialGuide();
+      renderLanes();
+      renderHand();
+      checkBattleOutcome();
+    }
+
+    function findEnemyTarget(squad, laneIndex) {
+      if (squad[laneIndex] && squad[laneIndex].hp > 0) return squad[laneIndex];
+      return squad.find(e => e.hp > 0) || null;
+    }
+
+    function dealDamage(target, amount) {
+      if (target.shield > 0) {
+        const blocked = Math.min(target.shield, amount);
+        target.shield -= blocked;
+        amount -= blocked;
+      }
+      target.hp = Math.max(0, target.hp - amount);
+    }
+
+    function endPlayerTurn() {
+      selectedCardIndex = null;
+      hoveredLaneIndex = null;
+
+      playerEggs.forEach(e => {
+        if (e.hp > 0 && e.regen) {
+          e.hp = Math.min(e.maxHp, e.hp + e.regen);
+        }
+      });
+
+      let totalEnemyHits = 0;
+      for (let i = 0; i < 5; i++) {
+        const enemy = enemyEggs[i];
+        if (enemy && enemy.hp > 0) {
+          if (enemy.regen) {
+            enemy.hp = Math.min(enemy.maxHp, enemy.hp + enemy.regen);
+          }
+          let targetLane = i;
+          // AGGRESSIVE ENEMY TACTICS
+          if (difficulty !== 'tutorial' && Math.random() < 0.65) {
+            const diagOffset = Math.random() < 0.5 ? -1 : 1;
+            const candidate = i + diagOffset;
+            if (candidate >= 0 && candidate < 5 && playerEggs[candidate].hp > 0) {
+              targetLane = candidate;
+            }
+          }
+          const target = findEnemyTarget(playerEggs, targetLane);
+          if (target) {
+            // HARDER DAMAGE OUTPUT
+            let enemyDmg = 5 + enemy.atkBonus + Math.floor(battleNumber * 1.8);
+            if (difficulty === 'tutorial') enemyDmg = 1;
+            if (difficulty === 'easy') enemyDmg = Math.max(3, enemyDmg - 2);
+            if (difficulty === 'hard') enemyDmg += 5;
+            dealDamage(target, enemyDmg);
+            totalEnemyHits++;
+          }
+        }
+      }
+
+      renderLanes();
+      if (!checkBattleOutcome()) {
+        setLog(`Enemy squad unleashed a brutal counterattack (${totalEnemyHits} strikes)! Your next turn begins.`);
+        setTimeout(() => {
+          startPlayerTurn();
+        }, 650);
+      }
+    }
+
+    function checkBattleOutcome() {
+      const enemiesAlive = enemyEggs.some(e => e.hp > 0);
+      const playersAlive = playerEggs.some(e => e.hp > 0);
+
+      if (!enemiesAlive) {
+        let baseReward = 20 + battleNumber * 8;
+        let diamondReward = 2;
+
+        if (difficulty === 'easy') { baseReward = Math.round(baseReward * 1.2); diamondReward = 1; }
+        else if (difficulty === 'normal') { diamondReward = 2; }
+        else if (difficulty === 'hard') { diamondReward = 3; }
+        else if (difficulty === 'tutorial') {
+          baseReward = 20;
+          diamondReward = 0;
+        }
+
+        gold += baseReward;
+        diamonds += diamondReward;
+        battleNumber++;
+
+        const freeCard = pullRandomCardFromPack();
+        addCardToDeckOrSpare(freeCard);
+
+        if (difficulty === 'tutorial' && !tutorialCompleted) {
+          tutorialCompleted = true;
+          for (let i = 0; i < 4; i++) {
+            addCardToDeckOrSpare(pullRandomCardFromPack());
+          }
+          for (let i = 0; i < 3; i++) {
+            const template = pullRandomEggFromPack();
+            addEggToInventory(createEggInstance(template.id));
+          }
+          saveProgress();
+          updateTopBar();
+          
+          showRevealModal('🎓 TUTORIAL CLEARED!', '📦✨', 'Starter Pack Claimed!', 'Rare', 'You received 4 bonus cards and 3 bonus eggs in your inventory!');
+          return true;
+        }
+
+        saveProgress();
+        updateTopBar();
+        openShop(`🏆 Hardcore Victory! Earned +${baseReward} Gold & +${diamondReward} Diamond(s)!`);
+        showRevealModal('🎉 VICTORY REWARD: FREE CARD!', '🃏', freeCard.name, freeCard.rarity, `${freeCard.patternLabel} — ${freeCard.desc}`);
+        return true;
+      }
+
+      if (!playersAlive) {
+        const consolation = 5;
+        gold += consolation;
+        saveProgress();
+        updateTopBar();
+        openShop(`💔 Brutal defeat! Your squad cracked. Salvaged +${consolation} Gold.`);
+        return true;
+      }
+
+      return false;
+    }
+
+    function claimQuestWins() {
+      if (battleNumber > 1 && !questWinsClaimed) {
+        questWinsClaimed = true;
+        diamonds += 3;
+        saveProgress();
+        updateTopBar();
+        renderQuests();
+        alert('Claimed +3 Diamonds from Quest: Win a Battle!');
+      }
+    }
+
+    function claimQuestPacks() {
+      if (!questPacksClaimed) {
+        questPacksClaimed = true;
+        diamonds += 5;
+        saveProgress();
+        updateTopBar();
+        renderQuests();
+        alert('Claimed +5 Diamonds from Quest: Visit the Shop!');
+      }
+    }
+
+    function claimAchievementBattle5() {
+      if (battleNumber >= 5 && !achievementBattle5Claimed) {
+        achievementBattle5Claimed = true;
+        diamonds += 10;
+        saveProgress();
+        updateTopBar();
+        renderQuests();
+        alert('Claimed +10 Diamonds from Achievement: Reach Battle #5!');
+      }
+    }
+
+    function renderQuests() {
+      const container = document.getElementById('quests-container');
+      const winAvailable = battleNumber > 1 && !questWinsClaimed;
+      const b5Available = battleNumber >= 5 && !achievementBattle5Claimed;
+
+      container.innerHTML = `
+        <div class="quest-item">
+          <div><strong>📜 Daily: Win 1 Battle</strong><br><span style="font-size:11px; color:var(--text-muted);">${battleNumber > 1 ? 'Completed!' : 'Progress: 0/1'}</span></div>
+          <button class="claim-btn" ${questWinsClaimed || !winAvailable ? 'disabled' : ''} onclick="claimQuestWins()">${questWinsClaimed ? 'Claimed' : '+3 💎'}</button>
+        </div>
+
+        <div class="quest-item">
+          <div><strong>📜 Daily: Visit Shop & Check Gear</strong><br><span style="font-size:11px; color:var(--text-muted);">${questPacksClaimed ? 'Completed!' : 'Open shop tab'}</span></div>
+          <button class="claim-btn" ${questPacksClaimed ? 'disabled' : ''} onclick="claimQuestPacks()">${questPacksClaimed ? 'Claimed' : '+5 💎'}</button>
+        </div>
+
+        <div class="quest-item">
+          <div><strong>🏆 Achievement: Reach Battle #5</strong><br><span style="font-size:11px; color:var(--text-muted);">Current: Battle #${battleNumber}/5</span></div>
+          <button class="claim-btn" ${achievementBattle5Claimed || !b5Available ? 'disabled' : ''} onclick="claimAchievementBattle5()">${achievementBattle5Claimed ? 'Claimed' : '+10 💎'}</button>
+        </div>
+      `;
+    }
+
+    function addCardToDeckOrSpare(card) {
+      if (playerDeck.length < MAX_DECK_SIZE) {
+        playerDeck.push(card);
+      } else {
+        spareCards.push(card);
+      }
+    }
+
+    function addEggToInventory(egg) {
+      spareEggs.push(egg);
+    }
+
+    function pullRandomCardFromPack() {
+      const rolledRarity = rollRarity();
+      const pool = CARD_CATALOG.filter(c => c.rarity === rolledRarity);
+      return pool[Math.floor(Math.random() * pool.length)] || CARD_CATALOG[0];
+    }
+
+    function pullRandomEggFromPack() {
+      const rolledRarity = rollRarity();
+      const pool = EGG_CATALOG.filter(e => e.rarity === rolledRarity);
+      return pool[Math.floor(Math.random() * pool.length)] || EGG_CATALOG[0];
+    }
+
+    function buyCardPack() {
+      if (gold < CARD_PACK_COST) return;
+      gold -= CARD_PACK_COST;
+      const pulledCard = pullRandomCardFromPack();
+      addCardToDeckOrSpare(pulledCard);
+      saveProgress();
+      updateTopBar();
+      renderShop();
+      showRevealModal('🃏 CARD PACK OPENED!', '🃏', pulledCard.name, pulledCard.rarity, `${pulledCard.patternLabel} — ${pulledCard.desc}`);
+    }
+
+    function buyEggPack() {
+      if (gold < EGG_PACK_COST) return;
+      gold -= EGG_PACK_COST;
+      const pulledTemplate = pullRandomEggFromPack();
+      const newEgg = createEggInstance(pulledTemplate.id);
+      addEggToInventory(newEgg);
+      saveProgress();
+      updateTopBar();
+      renderShop();
+      showRevealModal('🥚 EGG PACK HATCHED!', pulledTemplate.emoji, pulledTemplate.name, pulledTemplate.rarity, `❤️ ${pulledTemplate.maxHp} HP — ${pulledTemplate.powerText}`);
+    }
+
+    function buySuperCardPack() {
+      if (diamonds < SUPER_PACK_COST) return;
+      diamonds -= SUPER_PACK_COST;
+      
+      const pulledCards = [];
+      for (let i = 0; i < 4; i++) {
+        const c = pullRandomCardFromPack();
+        addCardToDeckOrSpare(c);
+        pulledCards.push(c);
+      }
+      saveProgress();
+      updateTopBar();
+      renderShop();
+      showRevealModal('📦 SUPER CARD PACK OPENED!', '🃏🃏', '4x Mystery Cards!', 'Rare', `You successfully pulled 4 cards: ${pulledCards.map(c => c.name).join(', ')}!`);
+    }
+
+    function buySuperEggPack() {
+      if (diamonds < SUPER_PACK_COST) return;
+      diamonds -= SUPER_PACK_COST;
+
+      const pulledEggs = [];
+      for (let i = 0; i < 3; i++) {
+        const template = pullRandomEggFromPack();
+        const newEgg = createEggInstance(template.id);
+        addEggToInventory(newEgg);
+        pulledEggs.push(newEgg);
+      }
+      saveProgress();
+      updateTopBar();
+      renderShop();
+      showRevealModal('📦 SUPER EGG PACK HATCHED!', '🥚🥚🥚', '3x Mystery Eggs!', 'Rare', `You successfully hatched 3 eggs: ${pulledEggs.map(e => e.name).join(', ')}!`);
+    }
+
+    function buySuperDamageUpgrade() {
+      const cost = 5 + (superDamageLevel * 5);
+      if (diamonds >= cost) {
+        diamonds -= cost;
+        superDamageLevel++;
+        playerEggs.forEach(e => e.atkBonus++);
+        saveProgress();
+        updateTopBar();
+        renderShop();
+        renderSuperUpgrades();
+      }
+    }
+
+    function buySuperShieldUpgrade() {
+      const cost = 6 + (superShieldLevel * 6);
+      if (diamonds >= cost) {
+        diamonds -= cost;
+        superShieldLevel++;
+        playerEggs.forEach(e => e.shield += 3);
+        saveProgress();
+        updateTopBar();
+        renderShop();
+        renderSuperUpgrades();
+      }
+    }
+
+    function buySuperPlaysUpgrade() {
+      const cost = 15;
+      if (diamonds >= cost && maxPlaysPerTurn < 3) {
+        diamonds -= cost;
+        maxPlaysPerTurn++;
+        saveProgress();
+        updateTopBar();
+        renderShop();
+        renderSuperUpgrades();
+      }
+    }
+
+    function renderSuperUpgrades() {
+      const container = document.getElementById('super-upgrades-container');
+      if (!container) return;
+      const dmgCost = 5 + (superDamageLevel * 5);
+      const shieldCost = 6 + (superShieldLevel * 6);
+      const playsCost = 15;
+
+      container.innerHTML = `
+        <div style="font-size:13px; font-weight:900; color:var(--gold); margin-bottom:8px;">💎 Super Upgrades Shop</div>
+        <div class="inventory-item" style="margin-bottom: 6px;">
+          <div><strong>⚔️ Super Damage (+${superDamageLevel} Atk)</strong></div>
+          <button class="buy-btn diamond-btn" ${diamonds < dmgCost ? 'disabled' : ''} onclick="buySuperDamageUpgrade()">💎 ${dmgCost}</button>
+        </div>
+
+        <div class="inventory-item" style="margin-bottom: 6px;">
+          <div><strong>🛡️ Super Shield (+${superShieldLevel * 3} Armor)</strong></div>
+          <button class="buy-btn diamond-btn" ${diamonds < shieldCost ? 'disabled' : ''} onclick="buySuperShieldUpgrade()">💎 ${shieldCost}</button>
+        </div>
+
+        <div class="inventory-item">
+          <div><strong>⚡ Max Plays (${maxPlaysPerTurn}/3)</strong></div>
+          <button class="buy-btn diamond-btn" ${maxPlaysPerTurn >= 3 || diamonds < playsCost ? 'disabled' : ''} onclick="buySuperPlaysUpgrade()">${maxPlaysPerTurn >= 3 ? 'MAX' : '💎 ' + playsCost}</button>
+        </div>
+      `;
+    }
+
+    function moveToSpare(deckIndex) {
+      if (playerDeck.length <= MIN_DECK_SIZE) {
+        alert(`Cannot move card! Active deck must keep at least ${MIN_DECK_SIZE} cards.`);
+        return;
+      }
+      const card = playerDeck.splice(deckIndex, 1)[0];
+      if (card) spareCards.push(card);
+      saveProgress();
+      renderShop();
+    }
+
+    function moveToDeck(spareIndex) {
+      if (playerDeck.length >= MAX_DECK_SIZE) {
+        alert(`Active deck is full (Max ${MAX_DECK_SIZE} cards).`);
+        return;
+      }
+      const card = spareCards.splice(spareIndex, 1)[0];
+      if (card) playerDeck.push(card);
+      saveProgress();
+      renderShop();
+    }
+
+    function sellSpareCard(spareIndex) {
+      const card = spareCards[spareIndex];
+      let sellValue = 5;
+      if (card.rarity === 'Uncommon') sellValue = 10;
+      if (card.rarity === 'Rare') sellValue = 20;
+      if (card.rarity === 'Epic') sellValue = 40;
+      if (card.rarity === 'Legendary') sellValue = 75;
+      if (card.rarity === 'Mythic') sellValue = 200;
+
+      spareCards.splice(spareIndex, 1);
+      gold += sellValue;
+      saveProgress();
+      updateTopBar();
+      renderShop();
+      setShopBanner(`Sold spare card "${card.name}" for +${sellValue} Gold!`);
+    }
+
+    function sellSpareEgg(spareIndex) {
+      const egg = spareEggs[spareIndex];
+      let sellValue = 10;
+      if (egg.rarity === 'Uncommon') sellValue = 18;
+      if (egg.rarity === 'Rare') sellValue = 35;
+      if (egg.rarity === 'Epic') sellValue = 70;
+      if (egg.rarity === 'Legendary') sellValue = 120;
+      if (egg.rarity === 'Mythic') sellValue = 250;
+
+      spareEggs.splice(spareIndex, 1);
+      gold += sellValue;
+      saveProgress();
+      updateTopBar();
+      renderShop();
+      setShopBanner(`Sold spare egg "${egg.name}" for +${sellValue} Gold!`);
+    }
+
+    function swapEggWithSpare(activeSlotIndex, spareIndex) {
+      const temp = playerEggs[activeSlotIndex];
+      playerEggs[activeSlotIndex] = spareEggs[spareIndex];
+      spareEggs[spareIndex] = temp;
+      saveProgress();
+      renderShop();
+    }
+
+    function showRevealModal(headerText, icon, name, rarity, desc) {
+      const modal = document.getElementById('reveal-modal');
+      const box = document.getElementById('reveal-box');
+      const rarityEl = document.getElementById('reveal-rarity');
+
+      document.getElementById('reveal-header').textContent = headerText;
+      document.getElementById('reveal-icon').textContent = icon;
+      document.getElementById('reveal-name').textContent = name;
+      document.getElementById('reveal-desc').textContent = desc;
+
+      rarityEl.textContent = rarity;
+      rarityEl.className = `reveal-rarity r-${rarity}`;
+      box.className = `reveal-box r-${rarity}`;
+
+      modal.classList.add('active');
+    }
+
+    function closeRevealModal() {
+      document.getElementById('reveal-modal').classList.remove('active');
+    }
+
+    function renderLanes() {
+      const container = document.getElementById('lanes-container');
+      container.innerHTML = '';
+
+      const selectedCard = selectedCardIndex !== null ? currentHand[selectedCardIndex] : null;
+      const previewEnemyTargets = (selectedCard && hoveredLaneIndex !== null)
+        ? getTargetEnemyIndices(selectedCard, hoveredLaneIndex)
+        : [];
+
+      for (let i = 0; i < 5; i++) {
+        const pEgg = playerEggs[i];
+        const eEgg = enemyEggs[i];
+
+        const pCanTarget = selectedCard !== null && pEgg.hp > 0;
+        const isEnemyTargeted = previewEnemyTargets.includes(i);
+
+        const row = document.createElement('div');
+        row.className = 'lane-row';
+        row.innerHTML = `
+          <div class="egg-slot player-egg ${pEgg.hp <= 0 ? 'dead' : ''} ${pCanTarget ? 'targetable' : ''} r-${pEgg.rarity}"
+               onmouseenter="setHoveredLane(${i})"
+               onmouseleave="clearHoveredLane()"
+               onclick="useCardOnPlayerEgg(${i})">
+            <div class="egg-left">
+              <div class="egg-icon">${pEgg.hp > 0 ? pEgg.emoji : '🍳'}</div>
+              <div>
+                <div class="egg-name">Spot ${i + 1}: ${pEgg.name}</div>
+                <div class="egg-power"><span class="r-${pEgg.rarity}">[${pEgg.rarity}]</span> ${pEgg.atkBonus > 0 ? `• +${pEgg.atkBonus} Atk` : ''}</div>
+              </div>
+            </div>
+            <div class="egg-stats">
+              <div class="hp-bar">❤️ ${pEgg.hp}/${pEgg.maxHp}</div>
+              ${pEgg.shield > 0 ? `<div class="shield-bar">🛡️ ${pEgg.shield}</div>` : ''}
+            </div>
+          </div>
+
+          <div class="lane-vs">${isEnemyTargeted ? '🎯 TARGET' : `LANE ${i + 1}`}</div>
+
+          <div class="egg-slot ${eEgg.hp <= 0 ? 'dead' : ''} ${isEnemyTargeted ? 'enemy-targeted' : ''} r-${eEgg.rarity}">
+            <div class="egg-left">
+              <div class="egg-icon">${eEgg.hp > 0 ? eEgg.emoji : '🍳'}</div>
+              <div>
+                <div class="egg-name">${eEgg.name}</div>
+                <div class="egg-power"><span class="r-${eEgg.rarity}">[${eEgg.rarity}]</span> • Enemy #${i + 1}</div>
+              </div>
+            </div>
+            <div class="egg-stats">
+              <div class="hp-bar">❤️ ${eEgg.hp}/${eEgg.maxHp}</div>
+              ${eEgg.shield > 0 ? `<div class="shield-bar">🛡️ ${eEgg.shield}</div>` : ''}
+            </div>
+          </div>
+        `;
+        container.appendChild(row);
+      }
+    }
+
+    function renderHand() {
+      const container = document.getElementById('hand-container');
+      container.innerHTML = '';
+
+      currentHand.forEach((card, idx) => {
+        const isDisabled = playsRemaining <= 0 && !card.played;
+        const isSelected = selectedCardIndex === idx;
+        const cardEl = document.createElement('div');
+        cardEl.className = `card r-${card.rarity} ${card.played ? 'played' : ''} ${isDisabled ? 'disabled' : ''} ${isSelected ? 'selected' : ''}`;
+        cardEl.onclick = () => selectCard(idx);
+        cardEl.innerHTML = `
+          <div>
+            <div class="card-top">
+              <span class="card-title">${card.name}</span>
+              <span class="card-rarity-tag r-${card.rarity}">${card.rarity}</span>
+            </div>
+            <div class="card-pattern">${card.patternLabel}</div>
+            <div class="card-desc">${card.desc}</div>
+          </div>
+          <div style="font-size:11px; font-weight:800; color:#81c784; margin-top:10px;">
+            ${card.played ? '✓ PLAYED' : (isDisabled ? 'No plays left' : (isSelected ? '👉 Hover/Click an egg above!' : 'Click to select'))}
+          </div>
+        `;
+        container.appendChild(cardEl);
+      });
+    }
+
+    function setLog(msg) {
+      document.getElementById('battle-log').textContent = msg;
+    }
+
+    function setShopBanner(msg) {
+      document.getElementById('shop-banner').textContent = msg;
+    }
+
+    function updateTopBar() {
+      document.getElementById('player-tag-display').textContent = `👤 ${username}`;
+      document.getElementById('gold-display').textContent = `🪙 ${gold} Gold`;
+      document.getElementById('diamond-display').textContent = `💎 ${diamonds} Diamonds`;
+      document.getElementById('wave-display').textContent = `🏆 Battle #${battleNumber}`;
+    }
+
+    function renderShop() {
+      renderSuperUpgrades();
+      const packsBox = document.getElementById('packs-container');
+      packsBox.innerHTML = `
+        <div class="pack-card">
+          <div>
+            <div class="pack-title">🃏 Mystery Card Pack (1 Card)</div>
+            <div class="pack-rates">
+              Rates: <span class="r-Common">Common 49.5%</span> • <span class="r-Uncommon">Uncommon 26%</span> • <span class="r-Rare">Rare 14%</span> • <span class="r-Epic">Epic 7%</span> • <span class="r-Legendary">Legendary 3%</span> • <span class="r-Mythic">Mythic 0.5%</span>
+            </div>
+          </div>
+          <button class="buy-btn" ${gold < CARD_PACK_COST ? 'disabled' : ''} onclick="buyCardPack()">🪙 ${CARD_PACK_COST}</button>
+        </div>
+
+        <div class="pack-card">
+          <div>
+            <div class="pack-title">🥚 Mystery Egg Pack (1 Egg)</div>
+            <div class="pack-rates">
+              Rates: <span class="r-Common">Common 49.5%</span> • <span class="r-Uncommon">Uncommon 26%</span> • <span class="r-Rare">Rare 14%</span> • <span class="r-Epic">Epic 7%</span> • <span class="r-Legendary">Legendary 3%</span> • <span class="r-Mythic">Mythic 0.5%</span>
+            </div>
+          </div>
+          <button class="buy-btn" ${gold < EGG_PACK_COST ? 'disabled' : ''} onclick="buyEggPack()">🪙 ${EGG_PACK_COST}</button>
+        </div>
+
+        <div class="pack-card super-pack">
+          <div>
+            <div class="pack-title">📦 Super Card Pack (4 Cards)</div>
+            <div class="pack-rates">Guaranteed 4 mystery cards bundle!</div>
+          </div>
+          <button class="buy-btn diamond-btn" ${diamonds < SUPER_PACK_COST ? 'disabled' : ''} onclick="buySuperCardPack()">💎 ${SUPER_PACK_COST}</button>
+        </div>
+
+        <div class="pack-card super-pack">
+          <div>
+            <div class="pack-title">📦 Super Egg Pack (3 Eggs)</div>
+            <div class="pack-rates">Guaranteed 3 mystery eggs bundle!</div>
+          </div>
+          <button class="buy-btn diamond-btn" ${diamonds < SUPER_PACK_COST ? 'disabled' : ''} onclick="buySuperEggPack()">💎 ${SUPER_PACK_COST}</button>
+        </div>
+      `;
+
+      document.getElementById('deck-count').textContent = playerDeck.length;
+      const activeDeckList = document.getElementById('active-deck-list');
+      activeDeckList.innerHTML = '';
+      playerDeck.forEach((card, idx) => {
+        const item = document.createElement('div');
+        item.className = 'inventory-item';
+        item.innerHTML = `
+          <div><span class="r-${card.rarity}">●</span> <strong>${card.name}</strong> <span style="font-size:11px; color:var(--text-muted);">(${card.patternLabel})</span></div>
+          <button class="mini-action-btn remove" onclick="moveToSpare(${idx})">To Spare</button>
+        `;
+        activeDeckList.appendChild(item);
+      });
+
+      document.getElementById('spare-cards-count').textContent = spareCards.length;
+      const spareCardsList = document.getElementById('spare-cards-list');
+      spareCardsList.innerHTML = '';
+      if (spareCards.length === 0) {
+        spareCardsList.innerHTML = `<div style="font-size:12px; color:var(--text-muted); padding:6px;">No spare cards in inventory.</div>`;
+      } else {
+        spareCards.forEach((card, idx) => {
+          let sellVal = card.rarity === 'Common' ? 5 : card.rarity === 'Uncommon' ? 10 : card.rarity === 'Rare' ? 20 : card.rarity === 'Epic' ? 40 : card.rarity === 'Legendary' ? 75 : 200;
+          const item = document.createElement('div');
+          item.className = 'inventory-item';
+          item.innerHTML = `
+            <div><span class="r-${card.rarity}">●</span> <strong>${card.name}</strong></div>
+            <div style="display:flex; gap:4px;">
+              <button class="mini-action-btn" onclick="moveToDeck(${idx})">Add</button>
+              <button class="mini-action-btn sell" onclick="sellSpareCard(${idx})">Sell (+${sellVal}🪙)</button>
+            </div>
+          `;
+          spareCardsList.appendChild(item);
+        });
+      }
+
+      const rosterList = document.getElementById('roster-list');
+      rosterList.innerHTML = '';
+      playerEggs.forEach((egg, slotIdx) => {
+        const item = document.createElement('div');
+        item.className = 'inventory-item';
+        item.innerHTML = `
+          <div><strong>Spot #${slotIdx + 1}:</strong> ${egg.emoji} ${egg.name} <span class="r-${egg.rarity}">[${egg.rarity}]</span></div>
+          <div style="font-size:11px; color:var(--text-muted);">❤️ ${egg.maxHp} HP</div>
+        `;
+        rosterList.appendChild(item);
+      });
+
+      document.getElementById('spare-eggs-count').textContent = spareEggs.length;
+      const spareEggsList = document.getElementById('spare-eggs-list');
+      spareEggsList.innerHTML = '';
+      if (spareEggs.length === 0) {
+        spareEggsList.innerHTML = `<div style="font-size:12px; color:var(--text-muted); padding:6px;">No spare eggs in inventory.</div>`;
+      } else {
+        spareEggs.forEach((egg, spareIdx) => {
+          let sellVal = egg.rarity === 'Common' ? 10 : egg.rarity === 'Uncommon' ? 18 : egg.rarity === 'Rare' ? 35 : egg.rarity === 'Epic' ? 70 : egg.rarity === 'Legendary' ? 120 : 250;
+          const item = document.createElement('div');
+          item.className = 'inventory-item';
+          item.innerHTML = `
+            <div>${egg.emoji} <strong>${egg.name}</strong> <span class="r-${egg.rarity}">[${egg.rarity}]</span></div>
+            <div style="display:flex; gap:4px; align-items:center;">
+              <select id="swap-select-${spareIdx}" style="background:#120d1c; color:white; border:1px solid var(--border-subtle); border-radius:4px; font-size:11px; padding:2px;">
+                <option value="0">Spot #1</option>
+                <option value="1">Spot #2</option>
+                <option value="2">Spot #3</option>
+                <option value="3">Spot #4</option>
+                <option value="4">Spot #5</option>
+              </select>
+              <button class="mini-action-btn" onclick="const slot = document.getElementById('swap-select-${spareIdx}').value; swapEggWithSpare(slot, ${spareIdx});">Swap</button>
+              <button class="mini-action-btn sell" onclick="sellSpareEgg(${spareIdx})">Sell (+${sellVal}🪙)</button>
+            </div>
+          `;
+          spareEggsList.appendChild(item);
+        });
+      }
+    }
+
+    loadProgress();
+    showHomeScreen();
+  </script>
+</body>
+</html>
